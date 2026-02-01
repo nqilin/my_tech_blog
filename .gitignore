@@ -1,0 +1,24 @@
+# Python 编译缓存
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 虚拟环境
+venv/
+env/
+ENV/
+
+# Flask 缓存
+instance/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# 系统/编辑器文件
+.DS_Store
+.vscode/
+*.swp
+*.swo
+
+# 数据库文件(后续我们的blog.db可选保留，这里先注释)
+# *.db
