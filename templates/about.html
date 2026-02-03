@@ -1,0 +1,31 @@
+<!-- Blog About Page - Day3 (With Jinja2 Template) -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tech Blog - {{ dev.title }}</title>
+</head>
+<body>
+    <header>
+        <h1>My Tech Blog</h1>
+        <p>Share Technical Notes & Development Experiences</p>
+    </header>
+
+    <nav>
+        <a href="/">Home</a> | 
+        <a href="/about">About Me</a>
+    </nav>
+
+    <main>
+        <h2>{{ dev.title }}</h2>
+        <p>Hello! I'm {{ dev.name }}, a beginner developer focusing on {{ dev.focus }}.</p>
+        <p>Tech Stack I'm learning: {{ dev.tech_stack }}.</p>
+        <p>This tech blog is my first full Web development project, built step by step from zero.</p>
+    </main>
+
+    <footer>
+        <p>© 2026 My Tech Blog | All Rights Reserved</p>
+    </footer>
+</body>
+</html>
