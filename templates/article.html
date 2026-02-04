@@ -1,46 +1,69 @@
-<!-- Blog Article Detail Page -->
+<!-- Blog Article Detail Page - Optimized (Unified Nav + Better Reading) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 动态标题：文章标题 + 博客名称 -->
-    <title>{{ post.title }} | My Tech Blog</title>
+    <title>{% if post %}{{ post.title }} | {{ data.title|default('My Tech Blog') }}{% else %}404 - Article Not Found{% endif %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
+    <!-- Blog Header -->
     <header>
-        <h1>My Tech Blog</h1>
-        <p>Share Technical Notes & Development Experiences</p>
+        <h1>{{ data.title }}</h1>
+        <p>{{ data.subtitle }}</p>
     </header>
 
-    <nav>
-        <a href="/">Home</a> | 
-        <a href="/about">About Me</a>
-    </nav>
+    <!-- 全局统一导航 + 搜索框 -->
+    <div class="nav-search-container">
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About Me</a>
+            {% if categories %}
+                <div class="dropdown">
+                    <button class="dropdown-btn">Categories ▾</button>
+                    <div class="dropdown-menu">
+                        {% for category in categories %}
+                            <a href="/category/{{ category }}">{{ category }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <form class="search-form" action="/" method="GET">
+            <input type="text" name="query" placeholder="Search articles (title/content)...">
+            <button type="submit">Search</button>
+        </form>
+    </div>
 
+    <!-- Main Content -->
     <main>
-        <!-- 只在有文章数据时渲染内容 -->
         {% if post %}
-            <h2>{{ post.title }}</h2>
-            <p style="color: #7f8c8d; font-size: 0.9rem; margin: 10px 0 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                Category: {{ post.category }} | Published: {{ post.date }}
-            </p>
-            <!-- 文章完整内容：用<pre>保留换行，更易读 -->
-            <pre style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.05rem; line-height: 1.6;">{{ post.content }}</pre>
-            <br>
-            <!-- 返回首页链接 -->
-            <a href="/" style="text-decoration: none; color: white; background: #2c3e50; padding: 8px 14px; border-radius: 4px;">Back to Home</a>
+            <!-- 文章详情内容：优化排版 -->
+            <div class="article-detail">
+                <h2>{{ post.title }}</h2>
+                <div class="article-meta">
+                    <span class="category-tag">{{ post.category }}</span>
+                    <span>Published: {{ post.date }}</span>
+                </div>
+                <div class="article-content">
+                    {{ post.content }}
+                </div>
+                <a href="/" class="back-btn">Back to Home</a>
+            </div>
         {% else %}
-            <!-- 无对应文章时的提示 -->
-            <h2>404 - Article Not Found</h2>
-            <p>The article you are looking for does not exist or the ID is wrong.</p>
-            <a href="/" style="text-decoration: none; color: white; background: #2c3e50; padding: 8px 14px; border-radius: 4px;">Back to Home</a>
+            <!-- 404提示：复用无结果样式 -->
+            <div class="no-results">
+                <h3>404 - Article Not Found</h3>
+                <p>The article you are looking for does not exist or the ID is incorrect.</p>
+                <a href="/">Back to Home</a>
+            </div>
         {% endif %}
     </main>
 
+    <!-- Footer -->
     <footer>
-        <p>© 2026 My Tech Blog | All Rights Reserved</p>
+        <p>© 2026 {{ data.title }} | All Rights Reserved</p>
     </footer>
 </body>
 </html>

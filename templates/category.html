@@ -1,10 +1,10 @@
-<!-- Blog Home Page - Optimized (Search + Category Filter + Card Layout) -->
+<!-- Blog Category Page - Optimized (Category Filter + Card Layout) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ data.title }} - Home</title>
+    <title>{{ category_name }} | {{ data.title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -14,24 +14,23 @@
         <p>{{ data.subtitle }}</p>
     </header>
 
-    <!-- 核心：全局统一导航 + 搜索框 + 动态分类（Jinja2渲染） -->
+    <!-- 全局统一导航 + 搜索框 -->
     <div class="nav-search-container">
         <div class="nav-links">
-            <a href="/" class="active">Home</a>
+            <a href="/">Home</a>
             <a href="/about">About Me</a>
-            <!-- 动态渲染所有分类（后续后端传参categories，预留语法） -->
             {% if categories %}
                 <div class="dropdown">
                     <button class="dropdown-btn">Categories ▾</button>
                     <div class="dropdown-menu">
-                        {% for category in categories %}
-                            <a href="/category/{{ category }}">{{ category }}</a>
+                        {% for cat in categories %}
+                            <a href="/category/{{ cat }}" {% if cat == category_name %}class="active"{% endif %}>{{ cat }}</a>
                         {% endfor %}
                     </div>
                 </div>
             {% endif %}
         </div>
-        <!-- 关键字搜索框 - GET请求，预留query参数，action指向首页 -->
+        <!-- 搜索框：和首页保持一致，支持分类页内搜索 -->
         <form class="search-form" action="/" method="GET">
             <input type="text" name="query" placeholder="Search articles (title/content)..." value="{{ request.args.get('query', '') }}">
             <button type="submit">Search</button>
@@ -40,15 +39,9 @@
 
     <!-- Main Content -->
     <main>
-        <h2 class="category-title">
-            {% if request.args.get('query') %}
-                Search Results for: "{{ request.args.get('query') }}"
-            {% else %}
-                {{ data.latest_article_tip }}
-            {% endif %}
-        </h2>
+        <h2 class="category-title">Category: {{ category_name }}</h2>
 
-        <!-- 文章列表：卡片式网格布局 + 无结果提示 -->
+        <!-- 分类文章列表：卡片式布局 + 无结果提示 -->
         {% if posts %}
             <div class="articles-grid">
                 {% for post in posts %}
@@ -64,14 +57,10 @@
                 {% endfor %}
             </div>
         {% else %}
-            <!-- 无文章/无搜索结果提示 -->
+            <!-- 无该分类文章提示 -->
             <div class="no-results">
-                <h3>No Articles Found</h3>
-                {% if request.args.get('query') %}
-                    <p>There are no articles matching your search keyword. Please try another one.</p>
-                {% else %}
-                    <p>There are no articles published yet. Stay tuned for updates!</p>
-                {% endif %}
+                <h3>No Articles in This Category</h3>
+                <p>There are no articles published in the {{ category_name }} category yet.</p>
                 <a href="/">Back to Home</a>
             </div>
         {% endif %}

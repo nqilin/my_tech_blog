@@ -1,4 +1,6 @@
-/* Global Style for My Tech Blog - Day4 */
+/* Global Style for My Tech Blog - Optimized Version
+   Support: article card, category filter, search, responsive layout
+*/
 * {
     margin: 0;
     padding: 0;
@@ -6,84 +8,411 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Body base style */
+/* Body base style - optimize background and global padding */
 body {
-    background-color: #f5f7fa;
-    color: #333;
-    line-height: 1.6;
-    padding: 20px;
+    background-color: #f8f9fa;
+    color: #2d3436;
+    line-height: 1.7;
+    padding: 0;
+    margin: 0 auto;
+    max-width: 1200px;
 }
 
-/* Header style (blog title & subtitle) */
+/* Header style - optimize color and padding */
 header {
     text-align: center;
-    margin-bottom: 30px;
-    padding: 20px;
+    padding: 30px 20px;
     background-color: #2c3e50;
     color: white;
-    border-radius: 8px;
+    border-radius: 0 0 8px 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
 header h1 {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     margin-bottom: 10px;
+    letter-spacing: 1px;
 }
 
 header p {
     font-size: 1.1rem;
     opacity: 0.9;
+    font-weight: 300;
 }
 
-/* Navigation bar style */
-nav {
-    text-align: center;
-    margin-bottom: 30px;
-    padding: 15px;
+/* 核心新增：导航+搜索+分类 容器样式 - 统一布局 */
+.nav-search-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    margin: 0 20px 30px;
+    gap: 15px;
 }
 
-nav a {
-    margin: 0 15px;
+/* 导航链接样式 - 包含Home/About Me/动态分类 */
+.nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    align-items: center; /* 新增：和下拉按钮垂直居中对齐 */
+}
+
+.nav-links a {
     text-decoration: none;
     color: #2c3e50;
     font-weight: 600;
-    font-size: 1.1rem;
-    transition: color 0.3s;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    padding: 6px 0;
+    line-height: 1.2;
+    border-bottom: 2px solid transparent;
 }
 
-nav a:hover {
+.nav-links a:hover, .nav-links a.active {
     color: #3498db;
+    border-bottom: 2px solid #3498db;
 }
 
-/* Main content area style */
-main {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 30px;
+/* ########## 新增：分类下拉列表核心样式 ########## */
+/* 下拉容器：包裹按钮+选项列表 */
+.dropdown {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 2px;
+}
+
+/* 下拉按钮样式：和导航链接完全一致 */
+.dropdown-btn {
+    background: none;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+
+    color: #2c3e50;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 6px 0;
+    line-height: 1.2;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    display: inline-block;
+}
+
+/* 下拉按钮hover/激活样式：和导航链接一致的蓝色+下划线 */
+.dropdown-btn:hover, .dropdown:hover .dropdown-btn {
+    color: #3498db;
+    border-bottom: 2px solid #3498db;
+}
+
+/* 下拉选项列表：默认隐藏，hover时显示 */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
     background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 4px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    min-width: 160px;
+    z-index: 999; /* 置顶显示，不被其他元素遮挡 */
+    display: none; /* 默认隐藏 */
+    padding: 4px 0;
 }
 
-main h2 {
+/* 鼠标悬停下拉容器时，显示选项列表 */
+.dropdown:hover .dropdown-menu {
+    display: block;
+    transition: all 0.1s ease-in;
+}
+
+/* 下拉选项样式 */
+.dropdown-menu a {
+    display: block; /* 竖排显示 */
+    padding: 10px 15px;
+    border-bottom: none; /* 取消下划线，用背景色表示hover */
+    color: #2c3e50;
+}
+
+/* 下拉选项hover样式：背景色+文字变色，无下划线 */
+.dropdown-menu a:hover {
+    background-color: #f8f9fa;
+    color: #3498db;
+    border-bottom: none;
+}
+
+/* 下拉选项active样式：分类页对应选项高亮 */
+.dropdown-menu a.active {
+    color: #3498db;
+    font-weight: 700;
+    background-color: #e3f2fd;
+    border-bottom: none;
+}
+/* ########## 下拉列表样式结束 ########## */
+
+/* 核心新增：搜索框样式 */
+.search-form {
+    display: flex;
+    gap: 5px;
+}
+
+.search-form input {
+    padding: 8px 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    outline: none;
+    font-size: 0.95rem;
+    width: 250px;
+    transition: border 0.3s;
+}
+
+.search-form input:focus {
+    border-color: #3498db;
+}
+
+.search-form button {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #3498db;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.search-form button:hover {
+    background-color: #2980b9;
+}
+
+/* Main content area - optimize margin and padding */
+main {
+    padding: 0 20px;
+    margin-bottom: 40px;
+}
+
+/* 核心新增：分类筛选标题样式 */
+.category-title {
     color: #2c3e50;
     margin-bottom: 20px;
     padding-bottom: 10px;
     border-bottom: 2px solid #3498db;
+    font-size: 1.5rem;
 }
 
-main p {
-    font-size: 1.05rem;
+/* 核心新增：文章卡片布局 - 网格布局，适配多文章 */
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+    margin-top: 20px;
+}
+
+/* 核心新增：文章卡片样式 */
+.article-card {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.06);
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.article-card h3 {
+    margin-bottom: 10px;
+}
+
+.article-card h3 a {
+    text-decoration: none;
+    color: #2c3e50;
+    transition: color 0.3s;
+    font-size: 1.2rem;
+}
+
+.article-card h3 a:hover {
+    color: #3498db;
+}
+
+/* 文章元信息（分类+日期）样式优化 */
+.article-meta {
+    color: #7f8c8d;
+    font-size: 0.85rem;
     margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
 }
 
-/* Footer style */
+/* 分类标签样式 - 新增 */
+.category-tag {
+    padding: 3px 8px;
+    background-color: #e3f2fd;
+    color: #2980b9;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* 文章简介样式 */
+.article-excerpt {
+    color: #57606f;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+/* 阅读更多按钮样式优化 */
+.read-more {
+    text-decoration: none;
+    color: white;
+    background-color: #3498db;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+.read-more:hover {
+    background-color: #2980b9;
+}
+
+/* 核心新增：无结果提示样式（无文章/无搜索结果） */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    color: #7f8c8d;
+}
+
+.no-results h3 {
+    font-size: 1.3rem;
+    margin-bottom: 15px;
+    color: #2c3e50;
+}
+
+.no-results a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.no-results a:hover {
+    text-decoration: underline;
+}
+
+/* 文章详情页样式优化 */
+.article-detail {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 30px;
+}
+
+.article-detail h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.article-detail .article-meta {
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
+}
+
+.article-detail .article-content {
+    color: #2d3436;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    margin-bottom: 30px;
+    white-space: pre-wrap; /* 保留正文换行，不使用<pre>，排版更自然 */
+}
+
+/* 返回按钮样式优化 */
+.back-btn {
+    text-decoration: none;
+    color: white;
+    background-color: #2c3e50;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: background 0.3s;
+    display: inline-block;
+}
+
+.back-btn:hover {
+    background-color: #1a252f;
+}
+
+/* About page style optimization */
+.about-content {
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 30px;
+}
+
+.about-content h2 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #3498db;
+    font-size: 1.8rem;
+}
+
+.about-content p {
+    color: #57606f;
+    font-size: 1.05rem;
+    margin-bottom: 20px;
+    line-height: 1.7;
+}
+
+/* Footer style optimization - fix position and padding */
 footer {
     text-align: center;
-    margin-top: 30px;
-    padding: 20px;
+    padding: 25px 20px;
     color: #7f8c8d;
     font-size: 0.9rem;
+    border-top: 1px solid #eee;
+    margin: 0 20px 20px;
+}
+
+/* 简单响应式适配 - 小屏幕下导航/搜索垂直排列，卡片单列 */
+@media (max-width: 768px) {
+    .nav-search-container {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .search-form input {
+        width: 200px;
+    }
+    .articles-grid {
+        grid-template-columns: 1fr;
+    }
+    header h1 {
+        font-size: 2rem;
+    }
+    .article-detail h2 {
+        font-size: 1.6rem;
+    }
 }
