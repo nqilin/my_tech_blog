@@ -1,0 +1,46 @@
+<!-- Blog Article Detail Page -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 动态标题：文章标题 + 博客名称 -->
+    <title>{{ post.title }} | My Tech Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header>
+        <h1>My Tech Blog</h1>
+        <p>Share Technical Notes & Development Experiences</p>
+    </header>
+
+    <nav>
+        <a href="/">Home</a> | 
+        <a href="/about">About Me</a>
+    </nav>
+
+    <main>
+        <!-- 只在有文章数据时渲染内容 -->
+        {% if post %}
+            <h2>{{ post.title }}</h2>
+            <p style="color: #7f8c8d; font-size: 0.9rem; margin: 10px 0 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                Category: {{ post.category }} | Published: {{ post.date }}
+            </p>
+            <!-- 文章完整内容：用<pre>保留换行，更易读 -->
+            <pre style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.05rem; line-height: 1.6;">{{ post.content }}</pre>
+            <br>
+            <!-- 返回首页链接 -->
+            <a href="/" style="text-decoration: none; color: white; background: #2c3e50; padding: 8px 14px; border-radius: 4px;">Back to Home</a>
+        {% else %}
+            <!-- 无对应文章时的提示 -->
+            <h2>404 - Article Not Found</h2>
+            <p>The article you are looking for does not exist or the ID is wrong.</p>
+            <a href="/" style="text-decoration: none; color: white; background: #2c3e50; padding: 8px 14px; border-radius: 4px;">Back to Home</a>
+        {% endif %}
+    </main>
+
+    <footer>
+        <p>© 2026 My Tech Blog | All Rights Reserved</p>
+    </footer>
+</body>
+</html>

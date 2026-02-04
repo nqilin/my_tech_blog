@@ -1,11 +1,10 @@
-<!-- Blog Home Page - Day3 (With Jinja2 Template) -->
+<!-- Blog Home Page (With Article List) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ data.title }} - Home</title>
-    <!-- 核心：Flask标准方式引入CSS（必须用url_for） -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
@@ -21,7 +20,20 @@
 
     <main>
         <h2>{{ data.latest_article_tip }}</h2>
-        <p>All my technical articles will be displayed here with category and search functions.</p>
+        <br>
+        <!-- 核心：Jinja2 for循环渲染文章列表 -->
+        {% for post in posts %}
+            <div style="margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee;">
+                <!-- 文章标题：链接到详情页，拼接文章ID -->
+                <h3><a href="/article/{{ post.id }}" style="text-decoration: none; color: #3498db;">{{ post.title }}</a></h3>
+                <!-- 文章元信息：分类 + 日期 -->
+                <p style="color: #7f8c8d; font-size: 0.9rem;">Category: {{ post.category }} | Published: {{ post.date }}</p>
+                <!-- 文章内容简介：截取前150个字符，加省略号 -->
+                <p>{{ post.content[:150] }}...</p>
+                <!-- 查看更多按钮 -->
+                <a href="/article/{{ post.id }}" style="text-decoration: none; color: white; background: #3498db; padding: 6px 12px; border-radius: 4px; font-size: 0.9rem;">Read More</a>
+            </div>
+        {% endfor %}
     </main>
 
     <footer>
