@@ -120,6 +120,84 @@ def category_posts(category_name):
         search_query=search_query  # 新增：传递搜索词，实现搜索框回显
     )
 
+# #################### Admin Routes (Page Only) ####################
+# 后台登录页
+@app.route('/admin/login')
+def admin_login():
+    return render_template('admin/login.html')
+
+# 后台首页（控制台）
+@app.route('/admin/dashboard')
+def admin_dashboard():
+    return render_template('admin/dashboard.html')
+
+# 发布文章页
+@app.route('/admin/create')
+def admin_create_post():
+    return render_template('admin/create_post.html')
+
+# 编辑文章页（静态测试，后续动态传参）
+@app.route('/admin/edit/<int:post_id>')
+def admin_edit_post(post_id):
+    # 临时模拟文章数据，后续从数据库获取
+    mock_post = {
+        'id': post_id,
+        'title': 'Getting Started with Flask',
+        'category': 'Python',
+        'content': 'Flask is a lightweight Python web framework...'
+    }
+    return render_template('admin/edit_post.html', post=mock_post)
+
+# 退出登录（临时路由）
+@app.route('/admin/logout')
+def admin_logout():
+    return "Logout successful (logic to be added)"
+
+# 富文本编辑器图片上传接口
+@app.route('/admin/upload_image', methods=['POST'])
+def upload_image():
+    # 1. 获取上传的图片文件
+    file = request.files.get('file')
+    if not file:
+        return jsonify({'code': 1, 'msg': 'No file uploaded'})
+
+    # 2. 生成唯一文件名（避免重名），用时间戳+原文件名
+    timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
+    filename = f"{timestamp}_{file.filename}"
+    # 图片保存路径：static/uploads
+    upload_path = os.path.join(app.root_path, 'static', 'uploads', filename)
+
+    # 3. 保存图片到本地
+    file.save(upload_path)
+
+    # 4. 返回图片 URL（前台访问路径）
+    image_url = f"/static/uploads/{filename}"
+    return jsonify({'code': 0, 'data': {'location': image_url}})
+
+# 发布文章 POST 路由（后续完善数据库保存，先测试表单）
+@app.route('/admin/create', methods=['POST'])
+def admin_create_post_submit():
+    title = request.form.get('title')
+    category = request.form.get('category')
+    content = request.form.get('content')  # 这里直接获取富文本 HTML 内容
+    # 后续：保存到数据库，现在先打印测试
+    print("Title:", title)
+    print("Category:", category)
+    print("Content (HTML):", content)
+    return "Post created successfully (database save to be added)"
+
+# 编辑文章 POST 路由（后续完善数据库更新）
+@app.route('/admin/edit/<int:post_id>', methods=['POST'])
+def admin_edit_post_submit(post_id):
+    title = request.form.get('title')
+    category = request.form.get('category')
+    content = request.form.get('content')
+    print("Post ID:", post_id)
+    print("Updated Title:", title)
+    print("Updated Category:", category)
+    print("Updated Content (HTML):", content)
+    return "Post updated successfully (database update to be added)"
+
 # Run app in debug mode
 if __name__ == '__main__':
     app.run(debug=True)

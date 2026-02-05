@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Vatey Tech Blog</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body>
+    <!-- 后台顶部导航 -->
+    <header class="admin-header">
+        <div class="admin-logo">Vatey Tech Blog | Admin</div>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/create">New Post</a>
+            <a href="/admin/logout">Logout</a>
+        </nav>
+    </header>
+
+    <!-- 后台主体内容 -->
+    <main class="admin-main">
+        <div class="dashboard-header">
+            <h1>Dashboard</h1>
+            <a href="/admin/create" class="btn btn-success">+ Create New Post</a>
+        </div>
+
+        <div class="dashboard-stats">
+            <div class="stat-card">
+                <h3>Total Posts</h3>
+                <p class="stat-number">3</p> <!-- 后续动态渲染 -->
+            </div>
+            <div class="stat-card">
+                <h3>Categories</h3>
+                <p class="stat-number">3</p> <!-- 后续动态渲染 -->
+            </div>
+        </div>
+
+        <div class="post-list-section">
+            <h2>All Posts</h2>
+            <table class="post-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- 后续动态渲染文章列表 -->
+                    <tr>
+                        <td>1</td>
+                        <td>Getting Started with Flask</td>
+                        <td>Python</td>
+                        <td>2026-02-04</td>
+                        <td>
+                            <a href="/admin/edit/1" class="btn btn-edit">Edit</a>
+                            <a href="/admin/delete/1" class="btn btn-delete">Delete</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>

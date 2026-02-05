@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Edit Post - Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <script src="https://cdn.tiny.cloud/1/o5samph80xg2uzwqqmeg74zp6awp5injdos9vkhmf0ehp2r4/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body>
+    <header class="admin-header">
+        <div class="admin-logo">Vatey Tech Blog | Admin</div>
+        <nav class="admin-nav">
+            <a href="/admin/dashboard">Dashboard</a>
+            <a href="/admin/create">New Post</a>
+            <a href="/admin/logout">Logout</a>
+        </nav>
+    </header>
+
+    <main class="admin-main">
+        <div class="form-container">
+            <h1>Edit Post</h1>
+            <form action="/admin/edit/{{ post.id }}" method="POST" class="post-form" id="editForm">
+                <div class="form-group">
+                    <label for="title">Post Title</label>
+                    <input type="text" id="title" name="title" value="{{ post.title }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        <option value="Python" {% if post.category == 'Python' %}selected{% endif %}>Python</option>
+                        <option value="Tools" {% if post.category == 'Tools' %}selected{% endif %}>Tools</option>
+                        <option value="Frontend" {% if post.category == 'Frontend' %}selected{% endif %}>Frontend</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="content">Content (Rich Text Editor)</label>
+                    <textarea id="content" name="content" rows="1" style="width:100%;">{{ post.content }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Update Post</button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        tinymce.init({
+            selector: '#content', // 绑定textarea的ID
+            height: 500, 
+            skin: 'oxide-dark', 
+            content_css: 'dark', // 编辑区深色背景
+            plugins: [
+            // Core editing features
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'visualblocks', 'wordcount',
+            ],
+            // 核心工具栏：满足字体/排版/图片上传
+            toolbar: 'undo redo | bold italic underline | fontsize | fontcolor backcolor | alignleft aligncenter alignright | bullist numlist | image | removeformat',
+            // table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol', // 表格编辑工具栏
+            // 图片上传接口对接Flask后端
+            image_upload_url: '/admin/upload_image',
+            // 去掉多余功能，保持简洁
+            menubar: true,
+            statusbar: true,
+            // 允许的标签，防止冗余代码
+            valid_elements: 'p,br,b,i,u,span[style],ul,li,ol,img[src|alt],' +
+                            'a[href|name|target],table,tr,td,th,thead,tbody,' +
+                            'code,pre,div[style],iframe[src|width|height],' +
+                            'em,strong,blockquote',
+                            // 保留标签的所有合法属性，避免样式/功能丢失
+            valid_attrs: '*[class|style|src|href|alt|title|name|target|width|height]',
+            codesample_languages: [ // 代码块高亮 - 适配Python/JS/HTML等常用语言
+                { text: 'Python', value: 'python' },
+                { text: 'JavaScript', value: 'javascript' },
+                { text: 'HTML', value: 'html' },
+                { text: 'CSS', value: 'css' },
+                { text: 'SQL', value: 'sql' }
+            ],
+        });
+    </script>
+</body>
+</html>
