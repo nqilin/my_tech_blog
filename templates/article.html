@@ -49,14 +49,17 @@
                 <div class="article-content">
                     {{ post.content }}
                 </div>
-                <a href="/" class="back-btn">Back to Home</a>
+                <!-- 文章详情页 - 英文返回按钮（分类+首页，并排显示，样式统一，无重复） -->
+                <a href="/category/{{ post.category }}" class="back-btn">← Back to {{ post.category }} Category</a>
+                <a href="/" class="back-btn">← Back to Home</a>
+                
             </div>
         {% else %}
             <!-- 404提示：复用无结果样式 -->
             <div class="no-results">
                 <h3>404 - Article Not Found</h3>
                 <p>The article you are looking for does not exist or the ID is incorrect.</p>
-                <a href="/">Back to Home</a>
+                <a href="/">← Back to Home</a>
             </div>
         {% endif %}
     </main>

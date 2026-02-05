@@ -272,6 +272,7 @@ main {
     font-size: 0.95rem;
     margin-bottom: 20px;
     line-height: 1.6;
+    min-height: 120px;
 }
 
 /* 阅读更多按钮样式优化 */

@@ -142,25 +142,37 @@ def article_detail(article_id):
         post=post  # 原有post参数保留
     )
 
-# 新增：分类筛选路由（点击下拉列表的分类，展示对应文章）
+# 分类筛选路由：新增「分类+搜索」叠加功能（双条件筛选）
 @app.route('/category/<category_name>')
 def category_posts(category_name):
-    # 1. 连接数据库，查询指定分类的所有文章（按发布时间倒序）
+    # 1. 接收搜索框的query参数（和首页搜索一致，无搜索则为空）
+    search_query = request.args.get('query', '').strip()
+
+    # 2. 连接数据库，根据「分类+是否有搜索词」执行双条件查询
     conn = get_db_connection()
-    # 用?占位符防SQL注入，安全规范
-    posts = conn.execute(
-        'SELECT * FROM posts WHERE category = ? ORDER BY id DESC',
-        (category_name,)
-    ).fetchall()
+    if search_query:
+        # 叠加查询：分类匹配 + 标题/正文包含搜索词（双条件）
+        posts = conn.execute('''
+            SELECT * FROM posts 
+            WHERE category = ? AND (title LIKE ? OR content LIKE ?)
+            ORDER BY id DESC
+        ''', (category_name, f'%{search_query}%', f'%{search_query}%')).fetchall()
+    else:
+        # 纯分类查询：仅匹配分类
+        posts = conn.execute(
+            'SELECT * FROM posts WHERE category = ? ORDER BY id DESC',
+            (category_name,)
+        ).fetchall()
     conn.close()
 
-    # 2. 渲染分类页模板，传递必要参数（和首页一致，保证样式统一）
+    # 3. 渲染模板，传递「搜索词」（回显到搜索框+页面标题）
     return render_template(
         'category.html',
-        data=BLOG_GLOBAL_DATA,       # 博客全局信息
-        categories=get_all_categories(),  # 动态分类列表（下拉列表用）
-        category_name=category_name, # 当前分类名称（页面标题+active高亮用）
-        posts=posts                  # 该分类下的文章列表
+        data=BLOG_GLOBAL_DATA,
+        categories=get_all_categories(),
+        category_name=category_name,
+        posts=posts,
+        search_query=search_query  # 新增：传递搜索词，实现搜索框回显
     )
 
 # Run app in debug mode
