@@ -28,7 +28,7 @@ def init_database():
                 title TEXT NOT NULL,
                 category TEXT NOT NULL,
                 content TEXT NOT NULL,
-                date TEXT NOT NULL
+                date DATETIME NOT NULL     
             )
         ''')
         # 插入3篇测试文章

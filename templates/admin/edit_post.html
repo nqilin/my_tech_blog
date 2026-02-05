@@ -21,6 +21,14 @@
     <main class="admin-main">
         <div class="form-container">
             <h1>Edit Post</h1>
+            <!-- ########## 新增：编辑提示 ########## -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div style="color: #48bb78; text-align: center; margin-bottom: 1.5rem; font-weight: 500;">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
             <form action="/admin/edit/{{ post.id }}" method="POST" class="post-form" id="editForm">
                 <div class="form-group">
                     <label for="title">Post Title</label>

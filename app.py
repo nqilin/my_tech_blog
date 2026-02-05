@@ -168,7 +168,12 @@ def admin_login():
 @app.route('/admin/dashboard')
 @admin_required  # 新增：未登录禁止访问
 def admin_dashboard():
-    return render_template('admin/dashboard.html')
+    # 连接数据库，查所有文章（按ID倒序，最新的在最前面）
+    conn = get_db_connection()
+    posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    conn.close()
+    # 传递posts数据到前端，用于动态渲染
+    return render_template('admin/dashboard.html', posts=posts)
 
 # 发布文章页
 @app.route('/admin/create')
@@ -176,27 +181,22 @@ def admin_dashboard():
 def admin_create_post():
     return render_template('admin/create_post.html')
 
-# 编辑文章页（静态测试，后续动态传参）
-@app.route('/admin/edit/<int:post_id>')
+# 编辑文章页
+@app.route('/admin/edit/<int:post_id>', methods=['GET'])
 @admin_required  # 新增：未登录禁止访问
 def admin_edit_post(post_id):
-    # 临时模拟文章数据，后续从数据库获取
-    mock_post = {
-        'id': post_id,
-        'title': 'Getting Started with Flask',
-        'category': 'Python',
-        'content': 'Flask is a lightweight Python web framework...'
-    }
-    return render_template('admin/edit_post.html', post=mock_post)
-
-# 退出登录
-@app.route('/admin/logout')
-@admin_required  # 新增：必须是登录了，才能退出
-def admin_logout():
-    # 清除Session中的登录状态，销毁登录
-    session.pop("is_login", None)
-    # 跳回后台登录页
-    return redirect(url_for("admin_login"))
+    # 1. 连接数据库，按ID查询文章
+    conn = get_db_connection()
+    post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+    conn.close()
+    
+    # 2. 处理文章不存在的情况（防止手动输入错误ID）
+    if not post:
+        flash("Article not found!")
+        return redirect(url_for("admin_dashboard"))
+    
+    # 3. 传递数据库查询的真实数据到编辑页，自动回显
+    return render_template('admin/edit_post.html', post=post)
 
 # 富文本编辑器图片上传接口
 @app.route('/admin/upload_image', methods=['POST'])
@@ -224,27 +224,102 @@ def upload_image():
 @app.route('/admin/create', methods=['POST'])
 @admin_required  # 新增：未登录禁止访问
 def admin_create_post_submit():
-    title = request.form.get('title')
-    category = request.form.get('category')
-    content = request.form.get('content')  # 这里直接获取富文本 HTML 内容
-    # 后续：保存到数据库，现在先打印测试
-    print("Title:", title)
-    print("Category:", category)
-    print("Content (HTML):", content)
-    return "Post created successfully (database save to be added)"
+    title = request.form.get('title').strip()
+    category = request.form.get('category').strip()
+    content = request.form.get('content').strip()  # 这里直接获取富文本 HTML 内容
+
+    # 2. 简单表单验证（防止空内容提交）
+    if not title or not category or not content:
+        flash("Title, category and content cannot be empty!")
+        return redirect(url_for("admin_create_post"))  # 跳回发布页，提示错误
+    
+
+    # 3. 连接数据库，插入文章数据
+    conn = get_db_connection()
+    try:
+        # 插入SQL：包含标题、分类、富文本内容、发布时间
+        conn.execute('''
+            INSERT INTO posts (title, category, content, date)
+            VALUES (?, ?, ?, ?)
+        ''', (title, category, content, datetime.now()))  # datetime.now()获取当前时间
+        conn.commit()  # 提交事务，确保数据存入数据库
+        # 获取刚插入的文章ID
+        post_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
+    finally:
+        conn.close()  # 无论成功失败，都关闭数据库连接
+    
+    # 4. 发布成功：跳转到后台首页
+    flash("Post published successfully!")
+    return redirect(url_for("admin_dashboard"))
 
 # 编辑文章 POST 路由（后续完善数据库更新）
 @app.route('/admin/edit/<int:post_id>', methods=['POST'])
 @admin_required  # 新增：未登录禁止访问
 def admin_edit_post_submit(post_id):
-    title = request.form.get('title')
-    category = request.form.get('category')
-    content = request.form.get('content')
-    print("Post ID:", post_id)
-    print("Updated Title:", title)
-    print("Updated Category:", category)
-    print("Updated Content (HTML):", content)
-    return "Post updated successfully (database update to be added)"
+    # 1. 获取前端修改后的表单数据
+    title = request.form.get('title').strip()
+    category = request.form.get('category').strip()
+    content = request.form.get('content').strip()
+
+    # 2. 表单非空验证
+    if not title or not category or not content:
+        flash("Title, category and content cannot be empty!")
+        return redirect(url_for("admin_edit_post", post_id=post_id))  # 跳回当前编辑页
+    
+    # 3. 连接数据库，更新数据
+    conn = get_db_connection()
+    try:
+        # 先查询文章是否存在
+        post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+        if not post:
+            flash("Article not found!")
+            return redirect(url_for("admin_dashboard"))
+        
+        # 更新数据库：适配`date`字段（
+        conn.execute('''
+            UPDATE posts 
+            SET title = ?, category = ?, content = ?, date = ?
+            WHERE id = ?
+        ''', (title, category, content, post_id, datetime.now()))  
+        conn.commit()
+    finally:
+        conn.close()
+    
+    # 4. 编辑成功，跳后台首页并提示
+    flash("Article updated successfully!")
+    return redirect(url_for("admin_dashboard"))
+
+# 新增：删除文章路由
+@app.route('/admin/delete/<int:post_id>')
+@admin_required
+def admin_delete_post(post_id):
+    # 1. 连接数据库，检查文章是否存在
+    conn = get_db_connection()
+    post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
+    if not post:
+        flash("Article not found!")
+        conn.close()
+        return redirect(url_for("admin_dashboard"))
+    
+    # 2. 删除对应ID的文章
+    try:
+        conn.execute('DELETE FROM posts WHERE id = ?', (post_id,))
+        conn.commit()
+        flash("Article deleted successfully!")
+    finally:
+        conn.close()
+    
+    # 3. 删除成功，跳后台首页
+    return redirect(url_for("admin_dashboard"))
+
+# 退出登录
+@app.route('/admin/logout')
+@admin_required  # 新增：必须是登录了，才能退出
+def admin_logout():
+    # 清除Session中的登录状态，销毁登录
+    session.pop("is_login", None)
+    # 跳回后台登录页
+    return redirect(url_for("admin_login"))
 
 # Run app in debug mode
 if __name__ == '__main__':

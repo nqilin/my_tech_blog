@@ -21,6 +21,14 @@
     <main class="admin-main">
         <div class="form-container">
             <h1>Create New Post</h1>
+            <!-- ########## 新增：发布文章反馈提示 ########## -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div style="color: #48bb78; text-align: center; margin-bottom: 1.5rem; font-weight: 500;">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
             <form action="/admin/create" method="POST" class="post-form" id="postForm">
                 <div class="form-group">
                     <label for="title">Post Title</label>

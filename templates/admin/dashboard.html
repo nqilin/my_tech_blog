@@ -21,6 +21,14 @@
     <main class="admin-main">
         <div class="dashboard-header">
             <h1>Dashboard</h1>
+            <!-- ########## 新增：发布/编辑/删除共用 ########## -->
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        <div style="color: #48bb78; text-align: center; margin-bottom: 1.5rem; font-weight: 500;">
+                            {{ messages[0] }}
+                        </div>
+                    {% endif %}
+                {% endwith %}
             <a href="/admin/create" class="btn btn-success">+ Create New Post</a>
         </div>
 
@@ -48,17 +56,23 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- 后续动态渲染文章列表 -->
+                    {% for post in posts %}
                     <tr>
-                        <td>1</td>
-                        <td>Getting Started with Flask</td>
-                        <td>Python</td>
-                        <td>2026-02-04</td>
-                        <td>
-                            <a href="/admin/edit/1" class="btn btn-edit">Edit</a>
-                            <a href="/admin/delete/1" class="btn btn-delete">Delete</a>
+                        <td>{{ post.id }}</td>
+                        <td>{{ post.title }}</td>
+                        <td>{{ post.category }}</td>
+                        <td>{{ post.date }}</td>  <!-- 适配你改后的date字段 -->
+                        <td class="action-buttons">
+                            <a href="/admin/edit/{{ post.id }}" class="btn btn-edit">Edit</a>
+                            <a href="/admin/delete/{{ post.id }}" class="btn btn-delete" onclick="return confirm('Are you sure to delete this article? This action cannot be undone!')">Delete</a>
                         </td>
                     </tr>
+                    {% else %}
+                        <!-- 无文章时显示提示 -->
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 2rem;">No articles yet. Create your first post now!</td>
+                        </tr>
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
