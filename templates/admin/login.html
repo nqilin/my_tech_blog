@@ -10,6 +10,14 @@
     <div class="admin-login-container">
         <div class="login-card">
             <h2>Admin Login</h2>
+            <!-- ########## 新增：登录失败的flash错误提示 ########## -->
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div style="color: #e53e3e; text-align: center; margin-bottom: 1.5rem; font-weight: 500;">
+                        {{ messages[0] }}
+                    </div>
+                {% endif %}
+            {% endwith %}
             <p class="login-subtitle">Manage your blog content</p>
             
             <form action="/admin/login" method="POST" class="login-form">
