@@ -1,24 +1,45 @@
-# Python 编译缓存
+# Python core
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
 *.py[cod]
 *$py.class
 
-# 虚拟环境
-venv/
+# Virtual environment
 env/
+venv/
+.venv/
 ENV/
+env.bak/
+venv.bak/
 
-# Flask 缓存
+# Flask
+.flaskenv
+.env
 instance/
-.pytest_cache/
-.coverage
-htmlcov/
 
-# 系统/编辑器文件
-.DS_Store
+# SQLite database
+*.db
+*.db-journal
+app_backup.db
+
+# Uploaded images (avoid pushing local images to GitHub)
+static/uploads/
+
+# IDE/Editor files
+.idea/
 .vscode/
 *.swp
 *.swo
+.DS_Store
+*.idea/workspace.xml
 
-# 数据库文件(后续我们的blog.db可选保留，这里先注释)
-# *.db
+# Logs
+*.log
+logs/
+
+# Build files
+dist/
+build/
+*.egg-info/
