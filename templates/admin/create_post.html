@@ -62,13 +62,45 @@
             content_css: 'dark', // 编辑区深色背景
             plugins: [
             // Core editing features
-            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'visualblocks', 'wordcount',
+            'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'link', 'lists', 'media', 'searchreplace', 'visualblocks', 'wordcount', 'image'
             ],
             // 核心工具栏：满足字体/排版/图片上传
             toolbar: 'undo redo | bold italic underline | fontsize | fontcolor backcolor | alignleft aligncenter alignright | bullist numlist | image | removeformat',
             // table_toolbar: 'tableprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | tableinsertcolbefore tableinsertcolafter tabledeletecol', // 表格编辑工具栏
+            
             // 图片上传接口对接Flask后端
             image_upload_url: '/admin/upload_image',
+            images_upload_credentials: true, // 携带Cookie（适配@admin_required登录验证）
+            // 解析后端返回的结果
+            images_upload_handler: function (blobInfo) {
+                return new Promise((success, failure) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.withCredentials = true;
+                    xhr.open('POST', '/admin/upload_image');
+
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            const res = JSON.parse(xhr.responseText);
+                            if (res.code === 0) {
+                                success(res.data.location); // 成功回调
+                            } else {
+                                failure(res.msg); // 失败回调
+                            }
+                        } else {
+                            failure('上传失败，状态码：' + xhr.status);
+                        }
+                    };
+
+                    xhr.onerror = function () {
+                        failure('网络请求失败');
+                    };
+
+                    const formData = new FormData();
+                    formData.append('file', blobInfo.blob(), blobInfo.filename());
+                    xhr.send(formData);
+                });
+            },
+
             // 去掉多余功能，保持简洁
             menubar: true,
             statusbar: true,
