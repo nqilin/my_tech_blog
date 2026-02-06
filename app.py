@@ -171,6 +171,20 @@ def admin_dashboard():
     # 连接数据库，查所有文章（按ID倒序，最新的在最前面）
     conn = get_db_connection()
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    
+    # 1. 获取搜索关键词（强制去空格，避免空格导致的查询无效）
+    keyword = request.args.get('keyword', '').strip()
+    if keyword:
+        # 有关键词：模糊查询标题/分类，按ID倒序
+        posts = conn.execute('''
+            SELECT * FROM posts 
+            WHERE title LIKE ? OR category LIKE ? 
+            ORDER BY id DESC
+        ''', (f'%{keyword}%', f'%{keyword}%')).fetchall()
+    else:
+        # 无关键词：查全量文章（保留你原有逻辑）
+        posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    
     # 2. 新增：查询文章总数
     total_posts = conn.execute('SELECT COUNT(*) FROM posts').fetchone()[0]
     # 3. 新增：查询分类总数（去重）
@@ -180,6 +194,7 @@ def admin_dashboard():
     return render_template(
         'admin/dashboard.html', 
         posts=posts,
+        keyword=keyword,  # 新增：传给模板，用于搜索框回显+提示语判断
         total_posts=total_posts,  # 文章总数
         total_categories=total_categories  # 分类总数)
     )    

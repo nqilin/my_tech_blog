@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Vatey Tech Blog</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <style>
+        .search-form {display: flex; gap: 1rem; margin: 1.5rem 0; align-items: center;}
+        .search-input {flex: 1; padding: 0.6rem 1rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem;}
+    </style>
 </head>
 <body>
     <!-- 后台顶部导航 -->
@@ -32,9 +36,21 @@
             <a href="/admin/create" class="btn btn-success">+ Create New Post</a>
         </div>
 
+        <!-- 新增：后台文章搜索查询框 -->
+        <form class="search-form" method="GET" action="/admin/dashboard">
+            <input 
+                type="text" 
+                name="keyword" 
+                class="search-input"
+                placeholder="Search by Title / Category (e.g. Python, C++)" 
+                value="{{ keyword or '' }}" <!-- 搜索后保留关键词 -->
+            >
+            <button type="submit" class="btn btn-success">Search Posts</button>
+        </form>
+
         <div class="dashboard-stats">
             <div class="stat-card">
-                <h3>Total Posts</h3>
+                <h3>{% if keyword %}Matched Posts{% else %}Total Posts{% endif %}</h3>
                 <p class="stat-number">{{ total_posts }}</p> <!-- 后续动态渲染 -->
             </div>
             <div class="stat-card">
@@ -68,9 +84,11 @@
                         </td>
                     </tr>
                     {% else %}
-                        <!-- 无文章时显示提示 -->
+                        <!-- 无结果提示（区分搜索/无文章）-->
                         <tr>
-                            <td colspan="5" style="text-align: center; padding: 2rem;">No articles yet. Create your first post now!</td>
+                            <td colspan="5" style="text-align: center; padding: 2rem; color: #666;">
+                                {% if keyword %}No posts matched with "{{ keyword }}", please try another keyword!{% else %}No articles yet. Create your first post now!{% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>
