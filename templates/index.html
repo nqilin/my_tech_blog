@@ -17,15 +17,18 @@
     <!-- 核心：全局统一导航 + 搜索框 + 动态分类（Jinja2渲染） -->
     <div class="nav-search-container">
         <div class="nav-links">
-            <a href="/" class="active">Home</a>
-            <a href="/about">About Me</a>
+            <a href="{{ url_for('index') }}" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+            <a href="{{ url_for('about') }}" class="{% if request.path == '/about' %}active{% endif %}">About Me</a>
             <!-- 动态渲染所有分类（后续后端传参categories，预留语法） -->
             {% if categories %}
                 <div class="dropdown">
                     <button class="dropdown-btn">Categories ▾</button>
                     <div class="dropdown-menu">
                         {% for category in categories %}
-                            <a href="/category/{{ category }}">{{ category }}</a>
+                            <a href="{{ url_for('category_posts', category_name=category) }}" 
+                            class="{% if request.path == url_for('category_posts', category_name=category) %}active{% endif %}">
+                                {{ category }}
+                            </a>
                         {% endfor %}
                     </div>
                 </div>
