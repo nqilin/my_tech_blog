@@ -319,6 +319,12 @@ main {
 }
 
 /* 文章详情页样式优化 */
+/* 新增：去掉内容中第一个<p>的上边距，解决空行问题 */
+.article-content p:first-child {
+  margin-top: 0 !important; /* !important确保覆盖浏览器默认样式 */
+  padding-top: 0 !important;
+}
+
 .article-detail {
     background-color: white;
     border-radius: 8px;
@@ -346,6 +352,7 @@ main {
     line-height: 1.8;
     margin-bottom: 30px;
     white-space: pre-wrap; /* 保留正文换行，不使用<pre>，排版更自然 */
+    word-break: break-word; /* 防止长单词/链接溢出 */
 }
 
 /* 返回按钮样式优化 */

@@ -28,22 +28,22 @@ def init_database():
                 title TEXT NOT NULL,
                 category TEXT NOT NULL,
                 content TEXT NOT NULL,
-                date DATETIME NOT NULL     
+                date DATE NOT NULL     
             )
         ''')
         # 插入3篇测试文章
-        test_posts = [
-            ('Getting Started with Flask Web Development', 'Python', 
-             'Flask is a lightweight Python web framework that is perfect for beginners. This article records the basic steps of building a Flask project, including environment setup, route creation, and template rendering. We also learned how to use Jinja2 to pass data from backend to frontend and how to beautify pages with CSS.',
-             '2026-02-04'),
-            ('How to Use Git and GitHub for Version Control', 'Tools',
-             'Git is an essential version control tool for developers. This article introduces the basic commands of Git, such as init, add, commit, pull and push. We also learned how to solve the push conflict problem and keep the commit history clean with rebase. GitHub is a great platform for hosting code and collaborating with others.',
-             '2026-02-05'),
-            ('HTML & CSS for Beginner Web Developers', 'Frontend',
-             'HTML is the skeleton of web pages, and CSS is the skin. We learned how to build the basic structure of a web page with HTML, including header, nav, main and footer. We also used CSS to beautify the page, such as setting background color, box shadow, and hover effects. Flask uses url_for to import static resources like CSS correctly.',
-             '2026-02-06')
-        ]
-        conn.executemany('INSERT INTO posts (title, category, content, date) VALUES (?, ?, ?, ?)', test_posts)
+        # test_posts = [
+        #     ('Getting Started with Flask Web Development', 'Python', 
+        #      'Flask is a lightweight Python web framework that is perfect for beginners. This article records the basic steps of building a Flask project, including environment setup, route creation, and template rendering. We also learned how to use Jinja2 to pass data from backend to frontend and how to beautify pages with CSS.',
+        #      '2026-02-04'),
+        #     ('How to Use Git and GitHub for Version Control', 'Tools',
+        #      'Git is an essential version control tool for developers. This article introduces the basic commands of Git, such as init, add, commit, pull and push. We also learned how to solve the push conflict problem and keep the commit history clean with rebase. GitHub is a great platform for hosting code and collaborating with others.',
+        #      '2026-02-05'),
+        #     ('HTML & CSS for Beginner Web Developers', 'Frontend',
+        #      'HTML is the skeleton of web pages, and CSS is the skin. We learned how to build the basic structure of a web page with HTML, including header, nav, main and footer. We also used CSS to beautify the page, such as setting background color, box shadow, and hover effects. Flask uses url_for to import static resources like CSS correctly.',
+        #      '2026-02-06')
+        # ]
+        # conn.executemany('INSERT INTO posts (title, category, content, date) VALUES (?, ?, ?, ?)', test_posts)
         conn.commit()
         conn.close()
         print("Database initialized successfully! Table 'posts' created and test data inserted.")

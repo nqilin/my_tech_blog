@@ -171,9 +171,18 @@ def admin_dashboard():
     # 连接数据库，查所有文章（按ID倒序，最新的在最前面）
     conn = get_db_connection()
     posts = conn.execute('SELECT * FROM posts ORDER BY id DESC').fetchall()
+    # 2. 新增：查询文章总数
+    total_posts = conn.execute('SELECT COUNT(*) FROM posts').fetchone()[0]
+    # 3. 新增：查询分类总数（去重）
+    total_categories = conn.execute('SELECT COUNT(DISTINCT category) FROM posts').fetchone()[0]
     conn.close()
     # 传递posts数据到前端，用于动态渲染
-    return render_template('admin/dashboard.html', posts=posts)
+    return render_template(
+        'admin/dashboard.html', 
+        posts=posts,
+        total_posts=total_posts,  # 文章总数
+        total_categories=total_categories  # 分类总数)
+    )    
 
 # 发布文章页
 @app.route('/admin/create')
@@ -224,9 +233,9 @@ def upload_image():
 @app.route('/admin/create', methods=['POST'])
 @admin_required  # 新增：未登录禁止访问
 def admin_create_post_submit():
-    title = request.form.get('title').strip()
-    category = request.form.get('category').strip()
-    content = request.form.get('content').strip()  # 这里直接获取富文本 HTML 内容
+    title = request.form.get('title')
+    category = request.form.get('category')
+    content = request.form.get('content')  # 这里直接获取富文本 HTML 内容
 
     # 2. 简单表单验证（防止空内容提交）
     if not title or not category or not content:
@@ -241,7 +250,7 @@ def admin_create_post_submit():
         conn.execute('''
             INSERT INTO posts (title, category, content, date)
             VALUES (?, ?, ?, ?)
-        ''', (title, category, content, datetime.now()))  # datetime.now()获取当前时间
+        ''', (title, category, content, datetime.now().strftime('%Y-%m-%d %I:%M %p')))  # datetime.now()获取当前时间
         conn.commit()  # 提交事务，确保数据存入数据库
         # 获取刚插入的文章ID
         post_id = conn.execute('SELECT last_insert_rowid()').fetchone()[0]
@@ -252,14 +261,14 @@ def admin_create_post_submit():
     flash("Post published successfully!")
     return redirect(url_for("admin_dashboard"))
 
-# 编辑文章 POST 路由（后续完善数据库更新）
+# 编辑文章 POST 路由
 @app.route('/admin/edit/<int:post_id>', methods=['POST'])
 @admin_required  # 新增：未登录禁止访问
 def admin_edit_post_submit(post_id):
     # 1. 获取前端修改后的表单数据
-    title = request.form.get('title').strip()
-    category = request.form.get('category').strip()
-    content = request.form.get('content').strip()
+    title = request.form.get('title') 
+    category = request.form.get('category')
+    content = request.form.get('content')
 
     # 2. 表单非空验证
     if not title or not category or not content:
@@ -280,7 +289,7 @@ def admin_edit_post_submit(post_id):
             UPDATE posts 
             SET title = ?, category = ?, content = ?, date = ?
             WHERE id = ?
-        ''', (title, category, content, post_id, datetime.now()))  
+        ''', (title, category, content, datetime.now().strftime('%Y-%m-%d %I:%M %p'), post_id))  # 更新修改时间为当前时间
         conn.commit()
     finally:
         conn.close()

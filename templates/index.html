@@ -58,7 +58,7 @@
                             <span class="category-tag">{{ post.category }}</span>
                             <span>Published: {{ post.date }}</span>
                         </div>
-                        <p class="article-excerpt">{{ post.content[:150] }}...</p>
+                        <p class="article-excerpt">{{ post.content|striptags|truncate(150) }}...</p>
                         <a href="/article/{{ post.id }}" class="read-more">Read More</a>
                     </div>
                 {% endfor %}

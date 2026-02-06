@@ -47,7 +47,7 @@
                     <span>Published: {{ post.date }}</span>
                 </div>
                 <div class="article-content">
-                    {{ post.content }}
+                    {{ post.content|safe }}
                 </div>
                 <!-- 文章详情页 - 英文返回按钮（分类+首页，并排显示，样式统一，无重复） -->
                 <a href="/category/{{ post.category }}" class="back-btn">← Back to {{ post.category }} Category</a>
